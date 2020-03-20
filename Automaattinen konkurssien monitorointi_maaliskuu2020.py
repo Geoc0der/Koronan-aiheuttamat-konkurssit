@@ -1,0 +1,85 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Mar 20 15:10:57 2020
+
+@author: Lari Jaakkola
+"""
+
+"""
+Tämä scripti hakee PRH:n avoimen rajpinnan kautta tiedot maaliskuussa 2020 
+tapahtuneista konkursseista kuukauden alusta kuluvaan päivään saakka.
+"""
+
+import requests
+import matplotlib.pyplot as plt
+from datetime import date
+from datetime import datetime
+
+url = 'https://avoindata.prh.fi/tr/v1/publicnotices?totalResults=true&maxResults=1000&resultsFrom=0&entryCode=KONALK&noticeRegistrationFrom=2020-01-01'
+
+konk_data = requests.get(url).json()
+
+tama_paiva = date.today()
+
+# muutetaan raakadatan päivämäärät datatime-objekteiksi
+
+for yritys in konk_data['results']:
+    yritys['registrationDate'] = datetime.strptime(yritys['registrationDate'], '%Y-%m-%d').date()
+
+# automaattinen x-akselin leveyden määritys
+
+def leveyden_maaritys(paiva):
+    palautettava = []
+    asetettava_pva = 1
+    pituus = paiva.day
+    for i in range(asetettava_pva,pituus+1):
+        palautettava.append(asetettava_pva)
+        asetettava_pva = asetettava_pva+1
+    return palautettava
+
+graph_leveys = leveyden_maaritys(tama_paiva)
+
+# automaattinen palkkien korkeuksien määrittely
+
+# ensin määritellään se mistä päivästä määrittelyn halutaan lähtevän liikkeelle
+
+alkupvm = date(2020,3,1)
+
+# tehdään lista kaikista maaliskuun päivistä
+
+maalis_pvat = []
+
+for day in range(alkupvm.day,tama_paiva.day+1):
+    maalis_pvat.append(date(2020,3,day))
+
+# haetaan maaliskuun konkurssit
+
+maalis_konkurssit = []
+
+def hae_kys_pvan_konkurssit(haettava_pva, raakadata):
+    palautettava = 0
+    for konkurssi in raakadata:
+        if konkurssi['registrationDate'] == haettava_pva:
+            palautettava = palautettava + 1
+        else:
+            continue
+    return palautettava
+
+for paiva in maalis_pvat:
+    maalis_konkurssit.append(hae_kys_pvan_konkurssit(paiva,konk_data['results']))
+        
+# Diagrammin teko
+
+plt.bar(graph_leveys, maalis_konkurssit, width=0.5, bottom=None, align='center', data=None, color='darkorange')
+
+# Add title and axis names
+plt.title('Konkurssiin asetetut yritykset Suomessa maaliskuussa 2020. Lähde: PRH avoin data',fontsize=10)
+plt.xlabel('Päivä', fontsize = 10)
+plt.ylabel('Konkurssien lukumäärä / päivä', fontsize=10)
+
+# Limits for the Y axis
+plt.ylim(0,16)
+
+plt.xticks(graph_leveys, rotation=45, fontsize=8)
+
+plt.savefig(fname='Konk_maal_autom.png')
