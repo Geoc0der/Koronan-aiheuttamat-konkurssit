@@ -40,13 +40,13 @@ eilinen = end_date - timedelta(days=1)
 
 # Tuodaan data Suomen yrityskannasta
 
-yrityskanta = pd.read_excel (r'C:\Users\larij\.spyder-py3\Korona konkurssit\Suomen yrityskanta q2 3029.xlsx')
+yrityskanta = pd.read_excel (r'C:\xxxx.xlsx')
 
 yrityskanta.rename(columns = {'Kunta':'nimi'}, inplace = True)
 
 # Tuodaan shapefile
 
-kunnat = gpd.read_file(r'C:\Users\larij\.spyder-py3\Korona konkurssit\Kuntarajat.shp')
+kunnat = gpd.read_file(r'C:\xxxx.shp')
 
 # Yhdistetään yrityskanta kuntakarttaan
 
