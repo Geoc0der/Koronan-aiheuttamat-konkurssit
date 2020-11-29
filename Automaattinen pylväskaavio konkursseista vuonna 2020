@@ -6,7 +6,7 @@ Created on Fri Mar 20 15:10:57 2020
 """
 
 """
-Tämä scripti hakee PRH:n avoimen rajpinnan kautta tiedot maaliskuussa 2020 
+Tämä scripti hakee PRH:n avoimen rajpinnan kautta tiedot vuonna 2020 
 tapahtuneista konkursseista kuukauden alusta kuluvaan päivään saakka.
 """
 
